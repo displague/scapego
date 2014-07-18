@@ -28,11 +28,12 @@
 
 
 uses dos;
+{$asmmode intel}
 {Procedure Scape;}
 var x:integer;
     y:byte;
     h:byte;
-    scr:array [0..63999] of byte absolute $a000:0000;
+    scr:array [0..63999] of byte absolute $a000;
     i,j,scans:integer;
     a:char;
     xvar,yvar:integer;
@@ -61,6 +62,14 @@ procedure setvideo(m : integer); assembler; asm
 procedure setpal(c,r,g,b : byte); assembler; asm
   mov dx,03c8h; mov al,c; out dx,al; inc dx; mov al,r
   out dx,al; mov al,g; out dx,al; mov al,b; out dx,al end;
+
+Procedure GrayPal;
+ type paltype=record r,g,b:byte end;
+ var i:byte;
+ begin;
+  for i:=0 to 255 do begin
+      setpal(i,i,i,i);end;
+ end;
 
 Procedure LoadPal(fn:string);
  type paltype=record r,g,b:byte end;
@@ -107,10 +116,11 @@ function avg(x,y:integer):byte;
 end;
 
 begin;
-  if paramcount=0 then GiveHelp;
+{if paramcount=0 then GiveHelp;}
   h:=0;Palfile:=paramstr(1);
   setvideo($13);
-  Loadpal(PalFile);
+  GrayPal();
+  {Loadpal(PalFile);}
   for i:=0 to 255 do scr[i+xsize*170]:=i;
   xvar:=xsize div (xn-1);
   yvar:=ysize div (yn-1);
