@@ -1,7 +1,8 @@
 # Scape - A simple 2d overhead landscape generator
 
-Here is the nostalgic comment header from the original `scape.pas`.  The revised license 
->
+Here is the nostalgic comment header from the original `scape.pas`.  The revised license and copyright information are included in this README.
+
+
 > Programmed by Marques Johansson - PWAC 96 - pwac@flinet.com
 > This program may be distributed so long as my name is kept here...
 >  If you add your own stuff- note it... I take no responsibility
