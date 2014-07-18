@@ -1,4 +1,5 @@
 {Programmed by Marques Johansson - PWAC 96 - pwac@flinet.com}
+
 { This program may be distributed so long as my name is kept here...
   If you add your own stuff- note it... I take no responsibility
   for any damage :<   bla blah blarr....
@@ -27,134 +28,204 @@
     find the bug please let me know...}
 
 
-uses dos;
+Uses dos;
 {$asmmode intel}
 {Procedure Scape;}
-var x:integer;
-    y:byte;
-    h:byte;
-    scr:array [0..63999] of byte absolute $a000;
-    i,j,scans:integer;
-    a:char;
-    xvar,yvar:integer;
-    ytemp,jtemp:word;
-    palfile:string[13];
-const vseg = $a000;
-      ysize=199;{detail controls}
-      xsize=319;
-      xmax=320;
-      xn=30;yn=30;{blocks across and down}
-      scanreq=10;{number of dithers}
-procedure GiveHelp;
- begin
-     Writeln('Generates random landscape type screens.');writeln;
-     Writeln('SCAPE [drive:][path][filename]');writeln;
-     writeln('      [drive:][path][filename]   Specifies drive/directory/file to load.');
-     writeln('                                 Filename must include Extension.');
-     writeln('');
-     writeln('Written by Marques Johansson - PWAC 96 - FreeWare');
-     writeln(' Mail to pwac@flinet.com or Visit http://www.flinet.com/~pwac');
-     halt(1);
- end;
 
-procedure setvideo(m : integer); assembler; asm
-  mov ax,m; int 10h end;
-procedure setpal(c,r,g,b : byte); assembler; asm
-  mov dx,03c8h; mov al,c; out dx,al; inc dx; mov al,r
-  out dx,al; mov al,g; out dx,al; mov al,b; out dx,al end;
+Var x:   integer;
+    y:   byte;
+    h:   byte;
+    scr:   array [0..63999] Of byte absolute $a000;
+    i,j,scans:   integer;
+    a:   char;
+    xvar,yvar:   integer;
+    ytemp,jtemp:   word;
+    palfile:   string[13];
+
+Const vseg =   $a000;
+    ysize =   199;{detail controls}
+    xsize =   319;
+    xmax =   320;
+    xn =   30;
+    yn =   30;{blocks across and down}
+    scanreq =   10;{number of dithers}
+Procedure GiveHelp;
+Begin
+    Writeln('Generates random landscape type screens.');
+    writeln;
+    Writeln('SCAPE [drive:][path][filename]');
+    writeln;
+    writeln(
+      '      [drive:][path][filename]   Specifies drive/directory/file to load.'
+    );
+    writeln('                                 Filename must include Extension.')
+    ;
+    writeln('');
+    writeln('Written by Marques Johansson - PWAC 96 - FreeWare');
+    writeln(' Mail to pwac@flinet.com or Visit http://www.flinet.com/~pwac');
+    halt(1);
+End;
+
+Procedure setvideo(m : integer);
+assembler;
+asm
+mov ax,m;
+int 10h
+End;
+Procedure setpal(c,r,g,b : byte);
+assembler;
+asm
+mov dx,03c8h;
+mov al,c;
+out dx,al;
+inc dx;
+mov al,r
+out dx,al;
+mov al,g;
+out dx,al;
+mov al,b;
+out dx,al
+End;
 
 Procedure GrayPal;
- type paltype=record r,g,b:byte end;
- var i:byte;
- begin;
-  for i:=0 to 255 do begin
-      setpal(i,i,i,i);end;
- end;
 
-Procedure LoadPal(fn:string);
- type paltype=record r,g,b:byte end;
- var  f:file of paltype;i:byte;
-      curpal:paltype;
- begin;
-  {$I-}assign(f,fn);reset(f);{$I+}close(f);
-  If IORESULT<>0 then GiveHelp;
-  assign(f,fn);reset(f);
-  for i:=0 to 255 do begin read(f,curpal);
-      setpal(i,curpal.r,curpal.g,curpal.b);end;
-  close(f);
- end;
+Type paltype =   Record
+    r,g,b:   byte
+End;
 
-Procedure retrace; assembler; asm
-  mov dx,03dah; @l1: in al,dx; test al,8; jnz @l1;@l2: in al,dx; test al,8; jz @l2 end;
+Var i:   byte;
+Begin;
+    For i:=0 To 255 Do
+        Begin
+            setpal(i,i,i,i);
+        End;
+End;
 
-function avg(x,y:integer):byte;
- var tmp:byte;
- begin
-  if ((x>0) and (x<xsize)) and ((y>0) and (y<ysize)) then
-   tmp:=(scr[x-1+(y+1)*xmax]+scr[x+(y+1)*xmax]+scr[x+1+(y+1)*xmax]+
-        scr[x-1+y*xmax]+                    scr[x+1+y*xmax]+
-        scr[x-1+(y-1)*xmax]+ scr[x+(y-1)*xmax]+scr[x+1+(y-1)*xmax])div 8;
+Procedure LoadPal(fn:String);
 
-  if (x=0) and (y>0) and (y<ysize) then
-   tmp:=(scr[x+(y-1)*xmax]+scr[x+1+(y-1)*xmax]+
-                          scr[x+1+y*xmax]+
-        scr[x+(y+1)*xmax]+scr[x+1+(y+1)*xmax]) div 5;
+Type paltype =   Record
+    r,g,b:   byte
+End;
 
-  if (x=xsize) and ((y>0) and (y<ysize)) then
-   tmp:= (scr[x-1+(y-1)*xmax]+scr[x+(y-1)*xmax]+
-         scr[x-1+y*xmax]+
-         scr[x-1+(y+1)*xmax]+scr[x+(y+1)*xmax]) div 5;
+Var  f:   file Of paltype;
+    i:   byte;
+    curpal:   paltype;
+Begin;
+  {$I-}
+    assign(f,fn);
+    reset(f);{$I+}
+    close(f);
+    If IORESULT<>0 Then GiveHelp;
+    assign(f,fn);
+    reset(f);
+    For i:=0 To 255 Do
+        Begin
+            read(f,curpal);
+            setpal(i,curpal.r,curpal.g,curpal.b);
+        End;
+    close(f);
+End;
 
-  if (y=0) and ((x>0) and (x<xsize)) then
-   tmp:= (scr[x-1+y*xmax]                      +scr[x+1+y*xmax]
-        +scr[x-1+(y+1)*xmax]+scr[x+(y+1)*xmax]+scr[x+1+(y+1)*xmax]) div 5;
+Procedure retrace;
+assembler;
+asm
+mov dx,03dah;
+@l1:   in al,dx;
+test al,8;
+jnz @l1;
+@l2:   in al,dx;
+test al,8;
+jz @l2
+End;
 
-  if (y=ysize) and ((x>0) and (x<xsize)) then
-   tmp:= (scr[x-1+(y-1)*xmax]+scr[x+(y-1)*xmax]+scr[x+1+(y-1)*xmax]+
-        scr[x-1+y*xmax] +                       scr[x+1+y*xmax]) div 5;
-  avg:=tmp;
-end;
+Function avg(x,y:integer):   byte;
 
-begin;
+Var tmp:   byte;
+Begin
+    If ((x>0) And (x<xsize)) And ((y>0) And (y<ysize)) Then
+        tmp := (scr[x-1+(y+1)*xmax]+scr[x+(y+1)*xmax]+scr[x+1+(y+1)*xmax]+
+               scr[x-1+y*xmax]+                    scr[x+1+y*xmax]+
+               scr[x-1+(y-1)*xmax]+ scr[x+(y-1)*xmax]+scr[x+1+(y-1)*xmax])Div 8;
+
+    If (x=0) And (y>0) And (y<ysize) Then
+        tmp := (scr[x+(y-1)*xmax]+scr[x+1+(y-1)*xmax]+
+               scr[x+1+y*xmax]+
+               scr[x+(y+1)*xmax]+scr[x+1+(y+1)*xmax]) Div 5;
+
+    If (x=xsize) And ((y>0) And (y<ysize)) Then
+        tmp := (scr[x-1+(y-1)*xmax]+scr[x+(y-1)*xmax]+
+               scr[x-1+y*xmax]+
+               scr[x-1+(y+1)*xmax]+scr[x+(y+1)*xmax]) Div 5;
+
+    If (y=0) And ((x>0) And (x<xsize)) Then
+        tmp := (scr[x-1+y*xmax]                      +scr[x+1+y*xmax]
+               +scr[x-1+(y+1)*xmax]+scr[x+(y+1)*xmax]+scr[x+1+(y+1)*xmax]) Div 5
+    ;
+
+    If (y=ysize) And ((x>0) And (x<xsize)) Then
+        tmp := (scr[x-1+(y-1)*xmax]+scr[x+(y-1)*xmax]+scr[x+1+(y-1)*xmax]+
+               scr[x-1+y*xmax] +                       scr[x+1+y*xmax]) Div 5;
+    avg := tmp;
+End;
+
+Begin;
 {if paramcount=0 then GiveHelp;}
-  h:=0;Palfile:=paramstr(1);
-  setvideo($13);
-  GrayPal();
+    h := 0;
+    Palfile := paramstr(1);
+    setvideo($13);
+    GrayPal();
   {Loadpal(PalFile);}
-  for i:=0 to 255 do scr[i+xsize*170]:=i;
-  xvar:=xsize div (xn-1);
-  yvar:=ysize div (yn-1);
-  randomize;{$Q-}
-  for j:=0 to yn-1 do
-   for i:=0 to xn-1 do scr[(j*yvar)*xmax+i*xvar]:=random(254);{$Q+}
+    For i:=0 To 255 Do
+        scr[i+xsize*170] := i;
+    xvar := xsize Div (xn-1);
+    yvar := ysize Div (yn-1);
+    randomize;{$Q-}
+    For j:=0 To yn-1 Do
+        For i:=0 To xn-1 Do
+            scr[(j*yvar)*xmax+i*xvar] := random(254);{$Q+}
                            {6*320*20+0*33}
+
 {If you have a reason for using colors on something other than BG-
  lower this!! try random(64) plenty left...
  For the game.pal included use 64...the other colors are for the rest
    you can make it up to 255 obviously....}
-{$Q-}  for y:= 0 to yn-1 do begin
-   ytemp:=y*xmax*yvar;
-   for j:= 0 to xn-2 do begin
-    jtemp:=j*xvar;
-    for i:=1 to xvar-1 do
-     scr[i+jtemp+ytemp]:=
-     scr[ytemp+jtemp]+(((scr[(j+1)*xvar+ytemp]-scr[jtemp+ytemp])div xvar)*i);
-    end;
-  end;
-  for x:= 0 to xsize do begin
-   for j:= 0 to yn-2 do begin
-    jtemp:=yvar*xmax;
-    for i:=1 to yvar-1 do
-     scr[(j*yvar+i)*xmax+x]:=
-     scr[x+j*jtemp]+(((scr[(j+1)*jtemp+x]-scr[j*jtemp+x]) div yvar)*i);
-   end;
-  end;{$Q-}
-  scans:=0;
-  repeat begin
-   for y:=0 to ysize do for x:=0 to xsize do scr[y*xmax+x]:=avg(x,y);
-   inc(scans); end; until scans=scanreq;
- setvideo($3);  {better remove this one to use as a sub}
-end.
+{$Q-}
+    For y:= 0 To yn-1 Do
+        Begin
+            ytemp := y*xmax*yvar;
+            For j:= 0 To xn-2 Do
+                Begin
+                    jtemp := j*xvar;
+                    For i:=1 To xvar-1 Do
+                        scr[i+jtemp+ytemp] := 
+                                              scr[ytemp+jtemp]+(((scr[(j+1)*xvar
+                                              +ytemp]-scr[jtemp+ytemp])Div xvar)
+                                              *i);
+                End;
+        End;
+    For x:= 0 To xsize Do
+        Begin
+            For j:= 0 To yn-2 Do
+                Begin
+                    jtemp := yvar*xmax;
+                    For i:=1 To yvar-1 Do
+                        scr[(j*yvar+i)*xmax+x] := 
+                                                  scr[x+j*jtemp]+(((scr[(j+1)*
+                                                  jtemp+x]-scr[j*jtemp+x]) Div
+                                                  yvar)*i);
+                End;
+        End;{$Q-}
+    scans := 0;
+    Repeat
+        Begin
+            For y:=0 To ysize Do
+                For x:=0 To xsize Do
+                    scr[y*xmax+x] := avg(x,y);
+            inc(scans);
+        End;
+    Until scans=scanreq;
+    setvideo($3);  {better remove this one to use as a sub}
+End.
 {Begin
  Scape;
 End.}
