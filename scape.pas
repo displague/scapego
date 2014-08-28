@@ -16,7 +16,7 @@ Var x:   integer;
     ytemp,jtemp:   word;
     palfile:   string[13];
 
-Const vseg =   $a000;
+Const 
     ysize =   199;{detail controls}
     xsize =   319;
     xmax =   320;
