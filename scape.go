@@ -19,20 +19,34 @@ func main() {
 	surface := window.GetSurface()
 
 	rect := sdl.Rect{0, 0, 200, 200}
+	var renderer, err3 = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err3 != nil {
+		panic(err)
+	}
+
+	renderer.Clear()
 	surface.FillRect(&rect, 0xffff0000)
+
+	blockHeight := int(height / rows)
+	blockWidth := int(width / cols)
+	var stamp = make([][]byte, 1+ blockHeight, 1 + blockWidth)
+	for i := range stamp {
+		for j := range stamp[i] {
+			stamp[i][j] = byte(rand.Intn(255))
+		}
+	}
+	dot:=stamp
+
+	for x := range dot {
+		for y := range dot[x] {
+			renderer.SetDrawColor(dot[x][y], dot[x][y], dot[x][y], 255)
+			renderer.DrawPoint(x, y)
+		}
+	}
+	renderer.Present()
 	window.UpdateSurface()
 
-	sdl.Delay(1000)
+	sdl.Delay(15000)
 	window.Destroy()
 }
 
-func dot() {
-	blockHeight := int(height / rows)
-	blockWidth := int(width / cols)
-	var stamp = make([(1 + blockHeight)][(1 + blockWidth)]int)
-	for i := range stamp {
-		for j := range stamp[i] {
-			stamp[i][j] = rand.Intn(255)
-		}
-	}
-}
