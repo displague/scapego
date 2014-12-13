@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/veandco/go-sdl2/sdl"
 	"math/rand"
+	"fmt"
 )
 
 var height = 600
@@ -21,7 +22,7 @@ func main() {
 	rect := sdl.Rect{0, 0, 200, 200}
 	var renderer, err3 = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err3 != nil {
-		panic(err)
+		panic(err3)
 	}
 
 	renderer.Clear()
@@ -39,10 +40,13 @@ func main() {
 
 	for x := range dot {
 		for y := range dot[x] {
+			// MapRGB(PIXELFORMAT_RGB555, 50, 50, 50)
 			renderer.SetDrawColor(dot[x][y], dot[x][y], dot[x][y], 255)
 			renderer.DrawPoint(x, y)
+
 		}
 	}
+
 	renderer.Present()
 	window.UpdateSurface()
 
