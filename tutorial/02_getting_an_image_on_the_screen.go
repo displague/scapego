@@ -16,12 +16,15 @@ func main() {
 	}
 
 	surface := window.GetSurface()
+	rect := sdl.Rect{0,0,200,200}
+	rect2 := sdl.Rect{200, 200,210,210}
 
-	surface.FillRect(nil, sdl.MapRGB(surface.Format, 50, 50, 50))
+	surface.FillRect(&rect, sdl.MapRGB(surface.Format, 50, 50, 50))
+	surface.FillRect(&rect2, sdl.MapRGB(surface.Format, 100, 20, 20))
 	gHelloWorld := sdl.LoadBMP("02_getting_an_image_on_the_screen.bmp")
-	surface.Blit(nil, gHelloWorld,nil)
+	surface.Blit(nil, gHelloWorld,&rect2)
 	window.UpdateSurface()
-	sdl.Delay(15000)
+	sdl.Delay(3000)
 	window.Destroy()
 	sdl.Quit()
 }
