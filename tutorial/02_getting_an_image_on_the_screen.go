@@ -15,16 +15,27 @@ func main() {
 		panic(err)
 	}
 
-	surface := window.GetSurface()
-	rect := sdl.Rect{0,0,200,200}
-	rect2 := sdl.Rect{200, 200,210,210}
+	renderer, err2 := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err2 != nil {
+		panic(err2)
+	}
 
-	surface.FillRect(&rect, sdl.MapRGB(surface.Format, 50, 50, 50))
-	surface.FillRect(&rect2, sdl.MapRGB(surface.Format, 100, 20, 20))
 	gHelloWorld := sdl.LoadBMP("02_getting_an_image_on_the_screen.bmp")
-	surface.Blit(nil, gHelloWorld,&rect2)
-	window.UpdateSurface()
+	texture, err3 := renderer.CreateTextureFromSurface(gHelloWorld)
+	if err3 != nil {
+		panic(err3)
+	}
+
+	src := sdl.Rect{0, 0, 400, 400}
+	dst := sdl.Rect{100, 50, 400, 400}
+
+	renderer.Clear()
+	renderer.Copy(texture, &src, &dst)
+	renderer.Present()
+
 	sdl.Delay(3000)
+	gHelloWorld.Free()
+	texture.Destroy()
 	window.Destroy()
 	sdl.Quit()
 }
