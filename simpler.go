@@ -15,7 +15,7 @@ func main() {
 		panic(err)
 	}
 
-	surface := window.GetSurface()
+	//surface := window.GetSurface()
 
 	// rect := sdl.Rect{0, 0, 200, 200}
 	var renderer, err3 = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
@@ -23,7 +23,7 @@ func main() {
 		panic(err3)
 	}
 
-	surface.FillRect(nil, sdl.MapRGB(surface.Format, 50, 50, 0))
+	//surface.FillRect(nil, sdl.MapRGB(surface.Format, 50, 50, 0))
 	renderer.Clear()
 
 	// MapRGB(PIXELFORMAT_RGB555, 50, 50, 50)
@@ -31,6 +31,7 @@ func main() {
 	renderer.DrawPoint(300, 300)
 	renderer.DrawPoint(400, 400)
 	renderer.DrawPoint(500, 500)
+	renderer.DrawLine(500, 500, 600,300)
 
 	renderer.Present()
 	// window.UpdateSurface()
