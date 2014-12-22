@@ -27,16 +27,16 @@ func main() {
 	renderer.Clear()
 
 	// MapRGB(PIXELFORMAT_RGB555, 50, 50, 50)
-	renderer.SetDrawColor(80,80,80, 255)
-	renderer.DrawPoint(300, 300)
-	renderer.DrawPoint(400, 400)
-	renderer.DrawPoint(500, 500)
-	renderer.DrawLine(500, 500, 600,300)
-
+	for h := 0; h < height; h++ {
+		for w := 0; w < width; w++ {
+			renderer.SetDrawColor(uint8(h%256), uint8(h%128), uint8(w%64), 255)
+			// renderer.DrawLine(500, 500, 600,300)
+			renderer.DrawPoint(h, w)
+		}
+	}
 	renderer.Present()
 	// window.UpdateSurface()
 
 	sdl.Delay(15000)
 	window.Destroy()
 }
-
