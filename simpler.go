@@ -30,8 +30,9 @@ func main() {
 	for h := 0; h < height; h++ {
 		for w := 0; w < width; w++ {
 			renderer.SetDrawColor(uint8(h%256), uint8(h%128), uint8(w%64), 255)
-			// renderer.DrawLine(500, 500, 600,300)
 			renderer.DrawPoint(h, w)
+			renderer.SetDrawColor(uint8(h%256), uint8(h%128), uint8(w%64), 10)
+			renderer.DrawLine(0, 0, w, h)
 		}
 	}
 	renderer.Present()
