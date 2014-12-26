@@ -29,10 +29,11 @@ func main() {
 	// MapRGB(PIXELFORMAT_RGB555, 50, 50, 50)
 	for h := 0; h < height; h++ {
 		for w := 0; w < width; w++ {
-			renderer.SetDrawColor(uint8(h%256), uint8(h%128), uint8(w%64), 255)
-			renderer.DrawPoint(h, w)
-			renderer.SetDrawColor(uint8(h%256), uint8(h%128), uint8(w%64), 10)
-			renderer.DrawLine(0, 0, w, h)
+			renderer.SetDrawColor(uint8(h%256), uint8(h%128), uint8(w%64), 80)
+			var rect = sdl.Rect{int32(h), int32(w), 40, 40}
+			renderer.DrawRect(&rect)
+			// renderer.SetDrawColor(uint8(h%256), uint8(h%128), uint8(w%64), 10)
+			// renderer.DrawLine(0, 0, w, h)
 		}
 	}
 	renderer.Present()
